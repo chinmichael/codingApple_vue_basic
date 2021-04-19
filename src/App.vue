@@ -24,3 +24,5 @@ export default {
   margin-top: 60px;
 }
 </style>
+
+<!--메인 페이지 template(HTML) / script(JS) / style(CSS)로 구성됨 : 실제 틀어지는건 index.html로 가지만-->

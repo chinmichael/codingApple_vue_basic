@@ -1,0 +1,30 @@
+Vue 강의 준비
+node.js 최신판 설치
+
+VS Code (짜피 인텔리제이에 기본으로 읍떠라)
+VS Code 터미널 npm install -g @vue/cli@4.5.11 로 뷰 개발환경 세팅 도우미
+(npm, yarn이 초기부터 안되면 node.js 삭제후 최신판으로 다시 깔기)
+(npm이 안되면 맥은 npm install -g yarn (윈도우는 반드시 사이트가서 따로 설치 후 재부팅) 후 yarn global add @vue/cli)
+
+VS 부가기능 vetur / html css support / vue 3 sinppets
+
+프로젝트를 관리할 폴더 생성 후 열기
+거기에 터미널에서 vue create 프로젝트명
+만약 윈도우에서 스크립트 보안오류 뜨면 powershell에서 Set-ExecutionPolicy Unrestricted 입력
+
+그 밖에 오류는 강의 다시 참고
+
+실시간 미리보기는 터미널에서 npm run serve
+
+
+node.js 설치이유 : npm을 사용하기 위함
+각종 웹개발 라이브러리를 쉽게 이용하기 위한 package manager (yarn도)
+
+npm은 @vue/cli 설치를 가능하게 함 > vue 프로젝트를 빠르게 생성해주는 라이브러리 (vue create 프로젝트명 으로 생성이 쉽게 가능)
+
+App.vue는 브라우저가 못 읽기에 index.html(여기다 박아넣음) 즉 HTML로 컴파일해줌 
+
+node_modules : 프로젝트에 쓰는 라이브러리들
+src: 다 아는 우리가 편집하는 소스코드 공간
+public : html파일, 기타파일 보관
+package.json : 중요/ 사용하는 라이브러리 버전, 프로젝트 설정들을 기록해놓음

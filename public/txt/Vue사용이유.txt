@@ -1,0 +1,35 @@
+Vue.js(라이브러리)사용이유
+
+웹 앱(Web-App, Single Page Application : 실제 모바일 앱처럼 사용가능한 화면전환이 부드러운 웹)을 만들기 위해
+
+React, Angular 냅두고 왜 Vue?
+
+1.쉬움 (핵심) 근데 기능은 전혀 떨어지지 않음
+
+2.개발 방법론 정해져 있음 : React는 for나 if 방법론 다양 but Vue는 v-for / v-if v-else : 협업 시 굳이 스타일 통일이 크게 필요없음
+                        (그래서 리액트는 JS실력과 고대로 비례)
+                        
+3.Vue도 React스럽게 자유도 높은 개발 가능 JSX, render()function 가능
+
+4.아주 미묘하게 HTML랜더링 속도가 빠르다고 함
+
+5.업데이트(장기지원) 잘 됨
+
+>> 결국 React던 Vue던 다 써보고(나는 어쩌다 Angular도 하게 되었지만) 어느거에 더 주력할 것인지 선택 (특히 JS부족하면 먼저 Vue하고 JS하다 React가...)
+
+
+JS 변수 여기 잠깐 정리
+
+JS에서 변수 쓰는 큰 이유 : 반복성 해결 / 직관성 향상 / 뭣보다 셀렉터로 찾은 HTML elements 저장 >> 이런 DOM탐색을 반복하지 않아도 되서 실행속도 향상
+
+Edge이상 최신 브라우저만 가능한 ES6문법 추가 변수
+var(재선언, 재할당(대입) 가능) / let(재선언 불가, 재할당 가능) / const(재선언하고 재할당 둘다 불가)
+
+so, 일반적으로 let 변수 많이 사용 / 상수같은 할당을 원하면 const / 그냥 범위 넓은게 필요하면 var
+
+
+Array
+var 변수명 = [ , , ]; 대충 JAVA에서 변수타입 옆에는 []안 쓴다고 생각 / 꺼낼 때는 똑같이 변수명[index]로 index는 0부터
+
+Object
+var 오브젝트 = { key : value, key : value }; 대괄호가 아닌 중괄호 사용 / key:value구조 / 꺼낼 때는 오브젝트.key로 value 끌어냄
