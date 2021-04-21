@@ -1,14 +1,25 @@
 <template>
+
+  <div class="black-bg" v-if="modal_status == true" v-on:click="modal_status=false">
+    <div class="white-bg">
+      <h4>상세페이지</h4>
+      <p>상세페이지내용</p>
+      <button vue-on:click="modal_status=false">닫기</button>
+    </div>
+  </div>
+
   <div class="menu">
     <a v-for="menu_name in menu_item" :key="menu_name">{{menu_name}}</a>
     <!--<a v-for="(a, i) in menu_item" :key="i">{{a}}</a>-->
   </div>
 
   <div>원룸샵</div>
-  <div class="product-list" v-for="(a,i) in product" :key="i">
-    <h4 :style="style1">{{a}}</h4>
-    <p>{{price[i]}} 만원</p>
-  </div>
+  <div class="product-list" v-for="(a,i) in products" :key="i">
+    <img src="./assets/room0.jpg" class="room-img">
+    <h4 :style="style1" @click="modal_status = true">{{a}}</h4>
+    <p>{{prices[i]}} 만원</p>
+    <button v-on:click="declare_cnt[i]++">허위매물신고</button> <span>신고수 : {{declare_cnt[i]}}</span>
+  </div> 
 
   <!--<div>
     <h4 :style="style1">{{product[1]}}</h4>
@@ -28,10 +39,17 @@ export default {
   name: 'App',
   data() { // 데이터 바인딩을 위해 따로 변수하는게 아닌 이런 data보관소를 만들어야함 (Object 자료형)
     return {
+      modal_status : false, //리액트에서는 state라고 함
       menu_item : ['Home', 'Shop', 'About'],
-      price : [70, 80, 90],
-      product : ['역삼동 원룸', '천호동 원룸', '마포구 원룸'],
-      style1 : 'color : blue', //속성 바인딩도 물론 문자로
+      prices : [70, 80, 90],
+      products : ['역삼동 원룸', '천호동 원룸', '마포구 원룸'],
+      style1 : 'color : blue', //속성 바인딩도 물론 문자로,
+      declare_cnt : [0,0,0],
+    }
+  },
+  method: {
+    increase_declare(i) { // 이벤트 호출시는 ()안붙일 수 있음
+      this.declare_cnt[i]++; //Vue 함수 주의사항 : data사용시 반드시 this. 붙임
     }
   },
   components: {
@@ -40,6 +58,33 @@ export default {
 </script>
 
 <style>
+body {
+  margin: 0;
+}
+
+div {
+  box-sizing: border-box;
+}
+
+.black-bg {
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed; padding: 20px;
+  transition: all 1s;
+}
+
+.white-bg {
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.room-img {
+  width:100%;
+  margin-top: 40px;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -96,6 +141,41 @@ vue의 경우는 속성타입 앞에 ':'를 붙이고 키를 불러냄 (angular�
 :key="" 반복문 생성 시 반복문 요소를 컴퓨터가 구분하기 위함(변수여야 함)
 작명은 (left,right)를 통해 2개까지 가능
 이 경우 left는 array내의 데이터, right는 1씩 증가하는 정수 
+-->
 
+<!--4/21 주요문법 : 이벤트 리스너, 핸들러 click감지
+어떤 액션을 취하면 특정 기능을 실행시키는것
+
+보통 HTML클릭시 코드실행시
+기존 JS : onClick="";
+Vue : v-on:click=""; or @click=""; @ = v-on:
+
+위 신고버튼 작성한다면
+기존 JS : 버튼을 누르면 해당 수를 찾아 +1 >> 그리고 그것을 HTML요소에 다시반영
+Vue : 해당 data만 수정되게 만들면 됨(실시간 랜더링 위에 다시반영 필요없음)
+    : v-on:click="data_key++";(or data_key += 1) 만 하면됨 
+
+당연히 함수도 됨(긴 코드를 함수명으로 축약시켜 HTML에 표현하기 위해)
+>>data 다음 공간에 method:{ 함수명(){} }를 만든다
+
+그밖에 여러 이벤트
+@(v-on:)
+mouseover : 커서를 갖다될때
+drag, input 등
+
+-->
+
+<!--4/21 주요문법 : vue 조건문 / 모달창
+Vue 개발 팁 : 항상 데이터중심적으로 (데이터를 어떻게 만들지를 먼저 생각)
+img넣는 경로는 assets에 넣는다
+
+router를 설치할 경우 굳이 모달창이 아니라도 다른 페이지로 이동시키면 됨
+
+모달창 제작 스탭(동적 UI 제작 스탭)
+0.HTML CSS 디자인
+1.UI의 현재상태를 데이터로 저장해둠 (모달창이 현재 보이는지 등)
+>>data에 modal_status 작성(true, false 등)
+2.데이터에 따라 UI가 어떻게 보일지 작성
+>>해당 HTML 요소에 v-if(vue 조건문) = ""로 조건 따른 변화 처리
 
 -->
