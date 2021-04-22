@@ -1,10 +1,12 @@
 <template>
 
-  <div class="black-bg" v-if="modal_status == true" v-on:click="modal_status=false">
+  <div class="black-bg" v-if="modal_status==true" v-on:click="modal_status=false">
     <div class="white-bg">
-      <h4>상세페이지</h4>
-      <p>상세페이지내용</p>
-      <button vue-on:click="modal_status=false">닫기</button>
+      <img :src="oneroom[modal_index].image" class="room-modal-img">
+      <h4>{{oneroom[modal_index].title}}</h4>
+      <p>{{oneroom[modal_index].price}}원</p>
+      <p>{{oneroom[modal_index].content}}</p>
+      <button v-on:click="moadl_status=false">close</button>
     </div>
   </div>
 
@@ -13,13 +15,27 @@
     <!--<a v-for="(a, i) in menu_item" :key="i">{{a}}</a>-->
   </div>
 
-  <div>원룸샵</div>
+  <!--<div>원룸샵</div>
   <div class="product-list" v-for="(a,i) in products" :key="i">
     <img src="./assets/room0.jpg" class="room-img">
     <h4 :style="style1" @click="modal_status = true">{{a}}</h4>
     <p>{{prices[i]}} 만원</p>
     <button v-on:click="declare_cnt[i]++">허위매물신고</button> <span>신고수 : {{declare_cnt[i]}}</span>
-  </div> 
+  </div>-->
+
+  <div>원룸샵</div>
+  <div class="product-list" v-for="(a, i) in oneroom" :key="i">
+    <img :src="oneroom[i].image" class="room-img">
+    <h4 @click="modal_status = true; modal_index = i;" :style="style1">{{oneroom[i].title}}</h4>
+    <p>{{oneroom[i].price}}원</p>
+  </div>
+
+  <!--a로 세팅하는 경우
+    <div class="product-list" v-for="(a, i) in oneroom" :key="i">
+    <img :src="a.image" class="room-img">
+    <h4 :style="style1" @click="modal_status = true">{{a.title}}</h4>
+    <p>{{a.price}}원</p>
+  </div> -->
 
   <!--<div>
     <h4 :style="style1">{{product[1]}}</h4>
@@ -35,14 +51,19 @@
 
 <script>
 
+import {roomInform} from "./assets/oneroom.js";
+
 export default {
   name: 'App',
   data() { // 데이터 바인딩을 위해 따로 변수하는게 아닌 이런 data보관소를 만들어야함 (Object 자료형)
     return {
       modal_status : false, //리액트에서는 state라고 함
+      modal_index : 0, //이것도 state
+
       menu_item : ['Home', 'Shop', 'About'],
-      prices : [70, 80, 90],
-      products : ['역삼동 원룸', '천호동 원룸', '마포구 원룸'],
+      //prices : [70, 80, 90],
+      //products : ['역삼동 원룸', '천호동 원룸', '마포구 원룸'],
+      oneroom : roomInform, // Array안에 Object로 구성되었다고 생각[{},{}]
       style1 : 'color : blue', //속성 바인딩도 물론 문자로,
       declare_cnt : [0,0,0],
     }
@@ -82,6 +103,11 @@ div {
 
 .room-img {
   width:100%;
+  margin-top: 40px;
+}
+
+.room-modal-img {
+  width:300px;
   margin-top: 40px;
 }
 
@@ -177,5 +203,50 @@ router를 설치할 경우 굳이 모달창이 아니라도 다른 페이지로 
 >>data에 modal_status 작성(true, false 등)
 2.데이터에 따라 UI가 어떻게 보일지 작성
 >>해당 HTML 요소에 v-if(vue 조건문) = ""로 조건 따른 변화 처리
+
+-->
+
+<!-- 4/22 주요문법1 : import, export
+
+실제 서버에서 데이터를 가져와서 HTML에 꽂는법
+근데 지금은 서버세팅이 안되어있기에 강좌에서 데이터 받아놓음
+>> 파일을 따로보관하여 가져옴 >> import문, export문
+
+자바스크립트 파일끼리 데이터 변수 전달할 때 (물론 함수도 전달 가능)
+보내는 곳 : export
+var apple = 10;을 보낼 때
+var apple2 = 10;
+export default(보낼것이 하나일 때) apple / export {apple, apple2} 
+
+받는 곳 : import
+import 작명(default로 보내면 짜피 한개이므로) from "경로"; >> 갖고온 변수를 써야함 (안그럼 에러)
+import {apple} from "경로"; import {apple, apple2} from "경로";
+
+바인딩 다시 정리
+HTML 태그 안 내용 바인딩 : {{}} // 이건 Angular도 같음
+HTML 태그 속성에 바인딩 : ':' (:image) // angular의 경우는 []
+HTML 태그 이벤트 : v-on:이벤트 (이벤트도 일종의 속성이니 :) or @이벤트 // 엥귤러의 경우 () 
+
+-->
+
+<!-- 4/22 주요문법2: 모달창에 데이터 넣기
+v-for 반복문에 따라 Array의 index가 바뀌는걸 모달창에 적용하는 경우
+
+data에 이를 위한 index status을 마련한다(state) : 일종의 이것도 동적 UI
+
+1.UI의 현재상태를 데이터로 저장해둠 (모달창이 현재 보이는지 등)
+>>data에 modal_status 작성(true, false 등)
+2.데이터에 따라 UI가 어떻게 보일지 작성
+>>해당 HTML 요소에 v-if(vue 조건문) = ""로 조건 따른 변화 처리
+
+
+@click 등 이벤트에 여러 함수 등 적용시 style등 프로퍼티에 여러개 적용시키는거처럼 ';'이용
+
+v-if가 있다면 v-else-if v-else도 존재
+<div v-if = ""></div>
+<div v-else-if = ""></div>
+<div v-else></div>
+
+사용 방법은 저렇게 하면 알아서 HTML에 직접 if문 세팅된다고 생각
 
 -->
