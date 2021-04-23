@@ -1,21 +1,38 @@
 <template>
-
-  <div class="black-bg" v-if="modal_status==true" v-on:click="modal_status=false">
+  <!-- <div
+    class="black-bg"
+    v-if="modal_status == true"
+    v-on:click="modal_status = false"
+  >
     <div class="white-bg">
-      <img :src="oneroom[modal_index].image" class="room-modal-img">
-      <h4>{{oneroom[modal_index].title}}</h4>
-      <p>{{oneroom[modal_index].price}}원</p>
-      <p>{{oneroom[modal_index].content}}</p>
-      <button v-on:click="moadl_status=false">close</button>
+      <img :src="oneroom[modal_index].image" class="room-modal-img" />
+      <h4>{{ oneroom[modal_index].title }}</h4>
+      <p>{{ oneroom[modal_index].price }}원</p>
+      <p>{{ oneroom[modal_index].content }}</p>
+      <button v-on:click="moadl_status = false">close</button>
     </div>
-  </div>
+  </div> -->
+
+  <Modal
+    v-bind:oneroom="oneroom"
+    v-bind:modal_index="modal_index"
+    :modal_status="modal_status"
+  />
 
   <div class="menu">
-    <a v-for="menu_name in menu_item" :key="menu_name">{{menu_name}}</a>
+    <a v-for="menu_name in menu_item" :key="menu_name">{{ menu_name }}</a>
     <!--<a v-for="(a, i) in menu_item" :key="i">{{a}}</a>-->
   </div>
 
-  <!--<div>원룸샵</div>
+  <Discount></Discount>
+
+  <div>원룸샵</div>
+  <Card
+    v-for="(a, i) in oneroom"
+    :key="i"
+    v-bind:oneroom_list="oneroom[i]"
+  ></Card>
+  <!--
   <div class="product-list" v-for="(a,i) in products" :key="i">
     <img src="./assets/room0.jpg" class="room-img">
     <h4 :style="style1" @click="modal_status = true">{{a}}</h4>
@@ -24,11 +41,19 @@
   </div>-->
 
   <div>원룸샵</div>
-  <div class="product-list" v-for="(a, i) in oneroom" :key="i">
-    <img :src="oneroom[i].image" class="room-img">
-    <h4 @click="modal_status = true; modal_index = i;" :style="style1">{{oneroom[i].title}}</h4>
-    <p>{{oneroom[i].price}}원</p>
-  </div>
+  <!-- <div class="product-list" v-for="(a, i) in oneroom" :key="i">
+    <img :src="oneroom[i].image" class="room-img" />
+    <h4
+      @click="
+        modal_status = true;
+        modal_index = i;
+      "
+      :style="style1"
+    >
+      {{ oneroom[i].title }}
+    </h4>
+    <p>{{ oneroom[i].price }}원</p>
+  </div> -->
 
   <!--a로 세팅하는 경우
     <div class="product-list" v-for="(a, i) in oneroom" :key="i">
@@ -46,36 +71,42 @@
     <h4 :style="style1">{{product[2]}}</h4>
     <p>{{price2}} 만원</p>
   </div>-->
-
 </template>
 
 <script>
-
-import {roomInform} from "./assets/oneroom.js";
+import { roomInform } from "./assets/oneroom.js";
+import Discount from "./Discount.vue";
+import Modal from "./Modal.vue";
+import Card from "./Card.vue";
 
 export default {
-  name: 'App',
-  data() { // 데이터 바인딩을 위해 따로 변수하는게 아닌 이런 data보관소를 만들어야함 (Object 자료형)
+  name: "App",
+  data() {
+    // 데이터 바인딩을 위해 따로 변수하는게 아닌 이런 data보관소를 만들어야함 (Object 자료형)
     return {
-      modal_status : false, //리액트에서는 state라고 함
-      modal_index : 0, //이것도 state
+      modal_status: false, //리액트에서는 state라고 함
+      modal_index: 0, //이것도 state
 
-      menu_item : ['Home', 'Shop', 'About'],
+      menu_item: ["Home", "Shop", "About"],
       //prices : [70, 80, 90],
       //products : ['역삼동 원룸', '천호동 원룸', '마포구 원룸'],
-      oneroom : roomInform, // Array안에 Object로 구성되었다고 생각[{},{}]
-      style1 : 'color : blue', //속성 바인딩도 물론 문자로,
-      declare_cnt : [0,0,0],
-    }
+      oneroom: roomInform, // Array안에 Object로 구성되었다고 생각[{},{}]
+      style1: "color : blue", //속성 바인딩도 물론 문자로,
+      declare_cnt: [0, 0, 0],
+    };
   },
   method: {
-    increase_declare(i) { // 이벤트 호출시는 ()안붙일 수 있음
+    increase_declare(i) {
+      // 이벤트 호출시는 ()안붙일 수 있음
       this.declare_cnt[i]++; //Vue 함수 주의사항 : data사용시 반드시 this. 붙임
-    }
+    },
   },
   components: {
-  }
-}
+    Discount: Discount, //key와 value가 같다면 key만 적어도 됨(ES6 문법)
+    Modal,
+    Card: Card,
+  },
+};
 </script>
 
 <style>
@@ -87,10 +118,12 @@ div {
   box-sizing: border-box;
 }
 
-.black-bg {
-  width: 100%; height: 100%;
+/* .black-bg {
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  position: fixed; padding: 20px;
+  position: fixed;
+  padding: 20px;
   transition: all 1s;
 }
 
@@ -99,17 +132,17 @@ div {
   background-color: white;
   border-radius: 8px;
   padding: 20px;
-}
+} */
 
 .room-img {
-  width:100%;
+  width: 100%;
   margin-top: 40px;
 }
 
-.room-modal-img {
-  width:300px;
+/* .room-modal-img {
+  width: 300px;
   margin-top: 40px;
-}
+} */
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -248,5 +281,22 @@ v-if가 있다면 v-else-if v-else도 존재
 <div v-else></div>
 
 사용 방법은 저렇게 하면 알아서 HTML에 직접 if문 세팅된다고 생각
+
+-->
+
+<!-- 4/23 : 컴포넌트
+
+컴포넌트 쓰임 : HTML을 줄이기 위함 (한 단어로 축약)
+새롭게 .vue파일을 생성 후 template, script(name도 지정), style 구조를 세팅한 뒤에
+필요한 컴포넌트 구성 후 불러온다
+(angular는 3파일로 기본 나누지만 vue는 .vue에 다 박음)
+
+축약한 컴포넌트 사용방법
+1.vue 파일 import(당빠 가져다 쓰는 곳 script)
+2.등록 (스크립트의 컴포넌트 파트)
+3.사용
+
+컴포넌트 사용 이유 : 1.코드정리 2.재사용
+
 
 -->
