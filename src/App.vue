@@ -17,6 +17,7 @@
     v-bind:oneroom="oneroom"
     v-bind:modal_index="modal_index"
     :modal_status="modal_status"
+    @closeModal="modal_status = false"
   />
 
   <div class="menu">
@@ -31,6 +32,11 @@
     v-for="(a, i) in oneroom"
     :key="i"
     v-bind:oneroom_list="oneroom[i]"
+    v-bind:index="i"
+    @openModal="
+      modal_status = true;
+      modal_index = $event;
+    "
   ></Card>
   <!--
   <div class="product-list" v-for="(a,i) in products" :key="i">
