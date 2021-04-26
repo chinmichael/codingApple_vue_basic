@@ -1,18 +1,25 @@
 <template>
-  <div
-    class="black-bg"
-    v-if="modal_status == true"
-    v-on:click="$emit('closeModal')"
-  >
-    <!-- v-on:click="modal_status = false"
+  <div class="black-bg" v-if="modal_status == true">
+    <!-- v-on:click="modal_status = false" 
   > -->
     <div class="white-bg">
       <img :src="oneroom[modal_index].image" class="room-modal-img" />
       <h4>{{ oneroom[modal_index].title }}</h4>
-      <p>{{ oneroom[modal_index].price }}원</p>
       <p>{{ oneroom[modal_index].content }}</p>
+      <!-- <input @input="month = $event.target.value" /> -->
+      <!--물론 이걸 바로 console.log로 볼수는 없으니 밑에 function을 통해서 볼 수 있음-->
+      <input v-model.number="month" id="month_input" />
+      <!--숫자로 변환되 저장되나 문자를 막아주는건 아님-->
+      <p>{{ month }}개월 선택 : {{ oneroom[modal_index].price * month }}원</p>
       <!-- <button v-on:click="modal_status = false">close</button> -->
-      <button @click="$emit('closeModal')">close</button>
+      <button
+        @click="
+          $emit('closeModal');
+          month = 1;
+        "
+      >
+        close
+      </button>
     </div>
   </div>
 </template>
@@ -27,8 +34,20 @@ export default {
   },
   data() {
     return {
-      //modal_status_in: this.modal_status, //this로 가져온 여기서의 변수임을 세팅함 중요
+      month: 1, // 초기값이 number라 문자로 넘겨받긴해도 최종적으로 number에 해당되야 정상인식
     };
+  },
+  watch: {
+    month(afterData, beforeData) {
+      if (isNaN(afterData)) {
+        this.month = beforeData; //Vue, Angular 등에서
+        alert("숫자만 입력 가능합니다");
+      }
+      if (afterData > 12 || afterData < 1) {
+        this.month = beforeData;
+        alert("12개월까지 입력이 가능합니다");
+      }
+    },
   },
 };
 </script>
@@ -120,4 +139,54 @@ custom event : 상위 컴포넌트 데이터 변경이 안되기에 상위컴포
 
 
 결국 상위컴포넌트 데이터를 수정하는수밖에 읍따
+-->
+
+<!--4/26 : 사용자 input 다루기 (@input, v-model)
+
+  input시 이벤트 발생 시키려면
+  v-on:click (= @click) 처럼 input에도 핸들러를 달아주면 됨(@input)
+  <input> 태그 내 가능한 input 핸들러 @input(입력할 때마다) @onchange(입력이 끝나고 다른 행동을 취할 때)
+  여기도 $evnet 사용
+
+  $event는 아래 이벤트 리스너에서 >> e와 동일한 역할 즉 요소의 변수라고 생각
+  HTMLelements.addEventListner.('event', function(e) {
+    e.target(); // 이벤트를 일으킨 요소
+    cf) e.preventDefault() // 이벤트를 일으키지 않은거처럼 막음
+  });
+
+  v-model은 축약버전
+  위 @input="data=$event.taget.value" 즉 form입력값은 밑 data에 저장하기의 축약버전
+  v-model="data"와 같음
+
+  v-model은 여러 input 뿐 아니라 textarea,select 등에도 사용 가능
+  input checkbox의 경우 true false로 받아옴
+
+  data세팅에는 초기값이 중요
+  위 month에서 문자 입력시 인식 못하는 이유(짜피 문자열로 넘겨받긴 하지만)
+  최종적으로 number가 들어와야하는 것으로 인식한다.
+  일단 JS특성상 자료형이 워낙 자유롭긴 하니 문자열자료형으로 저장되나 형식은 number라 생각
+  따라서 위에서 price와 *가 아니라 +로 하면 문자열 합치기가 되버림
+
+  이런 경우 >> v-model.number로 하면 숫자로 바꿔달라는 것으로 정의가능하긴 함 (문자입력을 막을순 없지만)
+
+-->
+
+<!-- 4/26 watcher 이용 : input에 입력값 유효성 검사
+
+watcher : data감시 함수 (데이터 변화가 제대로 되는지, 알맞는 데이터가 들어오는지)
+
+export{} 안에 watch : {}를 만들어서 세팅
+watch:{} 안에 감시하고자 하는 데이터 변수명으로 함수명을 지어 검사를 시킨다
+(위의 경우 month 데이터 감시하므로 month() {}) 해당 함수의 파라미터는 데이터에 넣는 입력값
+watcher함수의 파라미터는 2개까지 가능 (변경 후 데이터, 변경 전 데이터)로 받는다
+
+>> 해당 데이터가 변경이 될때마다 해당 watcher함수가 실행된다
+
+cf) isNaN() / Number.isNaN() >> 전자는 파라미터를 Number형을 강제형전환후 판단한다
+    input으로 들어오는 데이터는 일단 문자열
+
+cf) <input type="range" min="1" max="12"> : 1~12를 막대로 선택 가능한 range 형성
+
+만약 watcher를 사용하기 귀찮은 경우(주로 많이쓰는거 정규식 설정땜에)
+Vue 전용 form validation 라이브러리 ㄱㄱ
 -->
