@@ -13,12 +13,38 @@
     </div>
   </div> -->
 
-  <Modal
-    v-bind:oneroom="oneroom"
-    v-bind:modal_index="modal_index"
-    :modal_status="modal_status"
-    @closeModal="modal_status = false"
-  />
+  <!-- <div class="start" :class="{ end: modal_status }"> -->
+  <transition name="fade">
+    <Modal
+      v-bind:oneroom="oneroom"
+      v-bind:modal_index="modal_index"
+      :modal_status="modal_status"
+      @closeModal="modal_status = false"
+    />
+  </transition>
+  <!-- </div> -->
+
+  <!--4/27 vue로 애니메이션 주기
+
+      css애니메이션
+      1.시작전 class명 css작성
+      2.애니메이션 끝난 뒤 class명 css작성
+      3.원할때 2번 class명 부착 >> vue에서 클래스 바인딩(:class)을 통해
+
+      클래스명을 조건부로 넣어주는 경우 위 클래스 바인딩에 {클래스명 : 조건} >. 조건이 true일 때 부착됨
+
+      위 케이스를 Vue에서는 <transition>을 통해 더 쉽게 줄 수가 있다
+      보통 등장 애니메이션(v-if)에 잘 줌
+      <transition name="">태그로 필요한 부분 감싼뒤
+      style에 위 name으로 3개의 class작성
+      .name-enter-from(시작 애니메이션 동작전 상태)
+      .name-enter-active(transition 애니메이션 동작중 상태 주로 transition같은거)
+      .name-enter-to(끝 애니메이션 동작 후 상태)
+
+      퇴장 애니메이션도 쉽게 세팅 가능
+      위 클래스에서 enter가 아니라 leave로 작성
+
+  -->
 
   <div class="menu">
     <a v-for="menu_name in menu_item" :key="menu_name">{{ menu_name }}</a>
@@ -28,6 +54,21 @@
   <Discount></Discount>
 
   <div>원룸샵</div>
+
+  <button @click="abcSort">가나다순 정렬</button>
+  <button @click="lowPriceSort">낮은가격순 정렬</button>
+  <button @click="upPriceSort">높은가격순 정렬</button>
+  <button @click="underPrice(50)">50만원 이하만 보여주기</button>
+  <button @click="sortBack">되돌리기</button>
+
+  <!-- 4/27 : Vue 정렬 + 원본 데이터 보존
+
+  기존 JS : 1.Array 데이터를 정렬 2.HTML에 반영
+
+  Vue : Array 데이터 정렬하고 끝 / 데이터바인딩이 되면 실시간 자동 렌더링이 되기 때문에
+
+  -->
+
   <Card
     v-for="(a, i) in oneroom"
     :key="i"
@@ -96,15 +137,62 @@ export default {
       menu_item: ["Home", "Shop", "About"],
       //prices : [70, 80, 90],
       //products : ['역삼동 원룸', '천호동 원룸', '마포구 원룸'],
-      oneroom: roomInform, // Array안에 Object로 구성되었다고 생각[{},{}]
+      oneroom_original: roomInform, // [...Array] array/object 데이터 별개 사본 저장
+      oneroom: [...roomInform], // Array안에 Object로 구성되었다고 생각[{},{}]
       style1: "color : blue", //속성 바인딩도 물론 문자로,
       declare_cnt: [0, 0, 0],
     };
   },
-  method: {
-    increase_declare(i) {
-      // 이벤트 호출시는 ()안붙일 수 있음
-      this.declare_cnt[i]++; //Vue 함수 주의사항 : data사용시 반드시 this. 붙임
+  methods: {
+    // increase_declare(i) {
+    //   // 이벤트 호출시는 ()안붙일 수 있음
+    //   this.declare_cnt[i]++; //Vue 함수 주의사항 : data사용시 반드시 this. 붙임
+    // },
+
+    lowPriceSort() {
+      this.oneroom.sort(function (a, b) {
+        return a.price - b.price;
+      });
+    },
+
+    // sort()문법 : 실은 문자정렬임
+    // 만약 숫자 정렬의 경우 .sort(function(a,b){return a-b}); << 이 함수를 고대로 가져와 적용
+    // sort()의 동작원리 : array의 데이터 비교 결과가 음수면 앞(a) 파라미터를 왼쪽으로 보냄
+    // sort()은 원본데이터를 변형시켜버림 (map(), filter()는 원본보존) >> 좋지 않음
+
+    upPriceSort() {
+      this.oneroom.sort(function (a, b) {
+        return b.price - a.price;
+      });
+    },
+
+    abcSort() {
+      this.oneroom.sort(function (a, b) {
+        if (a.title > b.title) return 1;
+        if (a.title < b.title) return -1;
+        return 0;
+      });
+    },
+
+    // 문자열 정렬의 경우 저런식으로 두 요소를 비교해 1,-1,0을 리턴하게 하는 방식으로 소팅함
+
+    underPrice(standard) {
+      this.oneroom = this.oneroom.filter(function (e) {
+        return e.price <= 10000 * standard;
+      });
+    },
+
+    // filter의 경우는 걸러진 결과 배열 = 대상배열.filter(function(e) {
+    //  return 걸러지는 공식});으로 처리함 위를 기준으로 보자
+
+    sortBack() {
+      this.oneroom = [...this.oneroom_original];
+      //spread operator 문법 array나 object에 ...붙이면 이 둘의 괄호[], {}을 제거해줌
+      //그상태로 다시 괄호를 씌우면(그래서 위 배열은 [...]을 붙인 모양새) 같은 곳을 참조하지 않게 처리됨
+      //즉 같은 내용의 새로운 주소를 참조시킬 수가 있음
+
+      //문제는 저런식으로 하면 oneroom이 이제 oneroom_original을 참조하고 다시 sort하면 이것마저 바뀜
+      //따라서 넣는 순간 사본을 만들어 참조시키는 방식으로 해야한다.
     },
   },
   components: {
@@ -122,6 +210,40 @@ body {
 
 div {
   box-sizing: border-box;
+}
+
+/* .start {
+  opacity: 0;
+  transition: all 1s;
+}
+.end {
+  opacity: 1;
+} */
+
+.fade-enter-from {
+  transform: translateY(-1000px); /*y축 세팅*/
+  /* opacity: 0; */
+}
+
+.fade-enter-active {
+  transition: all 1s;
+}
+
+.fade-enter-to {
+  transform: translateY(0px); /*y축 세팅*/
+  /* opacity: 1; */
+}
+
+.fade-leave-from {
+  opacity: 1;
+}
+
+.fade-leave-active {
+  transition: all 1s;
+}
+
+.fade-leave-to {
+  opacity: 0;
 }
 
 /* .black-bg {
