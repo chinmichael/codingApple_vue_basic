@@ -51,7 +51,10 @@
     <!--<a v-for="(a, i) in menu_item" :key="i">{{a}}</a>-->
   </div>
 
-  <Discount></Discount>
+  <Discount
+    v-if="showDiscount == true"
+    v-bind:discountPer="discountPercent"
+  ></Discount>
 
   <div>원룸샵</div>
 
@@ -141,6 +144,9 @@ export default {
       oneroom: [...roomInform], // Array안에 Object로 구성되었다고 생각[{},{}]
       style1: "color : blue", //속성 바인딩도 물론 문자로,
       declare_cnt: [0, 0, 0],
+
+      showDiscount: true,
+      discountPercent: 30,
     };
   },
   methods: {
@@ -195,6 +201,35 @@ export default {
       //따라서 넣는 순간 사본을 만들어 참조시키는 방식으로 해야한다.
     },
   },
+
+  mounted() {
+    // App.vue(메인페이지)가 마운트 된 후 실행
+    // 컴포넌트가 생성되서 html에 부착된 상태
+    let interval = setInterval(() => {
+      if (this.discountPercent == 25) {
+        clearInterval(interval); //인터벌 정지함수
+      } else {
+        this.discountPercent = this.discountPercent - 1;
+      }
+    }, 1000);
+    //두번째 파라미터(밀리세컨)의 초마다 실행할 코드를 짤 수 있음
+
+    setTimeout(() => {
+      this.showDiscount = false;
+    }, 30000);
+    // x초 후에 함수를 실행하기 위한 js문법 setTimeout(function(){}, millisecond);
+
+    // JS function종류 1.function 2.()=>{} (arrow function) : this를 정확히 갖다쓰기 위함
+    /*
+    arrow function:익명의 함수
+    콜백함수 등에서 this가 전역객체를 가리킬때 arrowfunction은 상위환경 this를 계승
+    es6의 this는 Lexical this
+    */
+  },
+  /* 4/28 : lifecylce hook을 쓰려면
+    beforeCreate(), created(), beforeMount(), Mounted()... 등 각각 4step전후에 해당 메서드 생성
+
+  */
   components: {
     Discount: Discount, //key와 value가 같다면 key만 적어도 됨(ES6 문법)
     Modal,

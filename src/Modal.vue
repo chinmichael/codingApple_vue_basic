@@ -49,6 +49,13 @@ export default {
       }
     },
   },
+  beforeUpdate() {
+    //일단 update일어나면 해당 컴포넌트는 전부 재랜더링
+    if (this.month == 2) {
+      alert("과제땜에 2개월은 안됨");
+      this.month = 1;
+    }
+  },
 };
 </script>
 
